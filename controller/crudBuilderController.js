@@ -1,17 +1,23 @@
 const databaseBuilder = require("../utility/databaseConnectionBuilder");
 const indexFileBuilder = require("../utility/indexFileBulider");
 const sequelizeModelBuilder = require("../utility/modelBuilder");
+const packageFileGenerator = require("../utility/packageFileBuilder");
+const routerGenerator = require("../utility/routeFileGenerator");
 
 const crudBuilderControllerFunctionality = async (req, res) => {
     try{
         const {modelData} = req.body;
-        for(let model of modelData){
-           await indexFileBuilder(); //function to create the index file for the project
-           await databaseBuilder(); //function to make connection with the database
 
-           const name = model.name;
-           const fields = model.fields;
-           await sequelizeModelBuilder(name, fields) //function to create the models of the project
+        await indexFileBuilder(); //function to create the index file for the project
+        await databaseBuilder(); //function to make connection with the database
+        await packageFileGenerator(); //function to generate the package.json file for the project.
+        
+        for(let model of modelData){
+            const name = model.name;
+            const fields = model.fields;
+           
+            await sequelizeModelBuilder(name, fields) //function to create the models of the project
+            await routerGenerator(model); //function to gegenerate the route for each model individually
         }
     }catch(err){
         return res.status(500).json({error : err});
