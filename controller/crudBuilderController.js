@@ -1,3 +1,4 @@
+const controllerCreation = require("../utility/controllerBuilder");
 const databaseBuilder = require("../utility/databaseConnectionBuilder");
 const indexFileBuilder = require("../utility/indexFileBulider");
 const sequelizeModelBuilder = require("../utility/modelBuilder");
@@ -17,7 +18,8 @@ const crudBuilderControllerFunctionality = async (req, res) => {
             const fields = model.fields;
            
             await sequelizeModelBuilder(name, fields) //function to create the models of the project
-            await routerGenerator(model); //function to gegenerate the route for each model individually
+            await routerGenerator(name); //function to gegenerate the route for each model individually
+            await controllerCreation(name)
         }
     }catch(err){
         return res.status(500).json({error : err});
